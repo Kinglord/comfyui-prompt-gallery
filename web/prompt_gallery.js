@@ -1668,7 +1668,7 @@ class PromptGallery {
         // Remove any duplicate periods or comma-period combinations
         text = text.replace(/\.{2,}/g, '.').replace(/,\s*\./g, '.');
         // Ensure there's a space after each period or comma, but not at the very end
-        text = text.replace(/([.,])(?=\S)/g, '$1 ').trim();
+        text = text.replace(/([,])(?=\S)/g, '$1 ').trim();
         return text;
     }
 
