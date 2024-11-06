@@ -1660,8 +1660,8 @@ class PromptGallery {
         return imgContainer;
     }
 
+    // Remove leading and trailing commas, spaces, and BREAK◘
     cleanText(text) {
-        // Remove leading and trailing commas, spaces, and BREAK
         text = text.replace(/^[,\s]+|[,\s]+$/g, '');
         // Replace BREAK (case insensitive) with a period, handling various scenarios
         text = text.replace(/\s*BREAK\s*(?:,\s*)?/gi, '. ');
@@ -1681,9 +1681,9 @@ class PromptGallery {
         // If existing text ends with a period, don't add a comma
         if (existing.endsWith('.')) {
             return existing + ' ' + newText;
-        } else {
-            return existing + ', ' + newText;
         }
+
+        return existing + newText;
     }
 
     generateRandomPrompt() {
@@ -1774,9 +1774,22 @@ class PromptGallery {
         }
     
         if (targetNode && targetWidget) {
-            // Combine existing text with new text
-            let newValue = this.combineTexts(targetWidget.value || "", textToCopy);
+            let newValue = ''
+            let replacedExistingText = false
+            if(targetWidget.value.includes(textToCopy))
+                {
+                console.log('found it')
+                // If the clicked wildcard prompt is already in the textbox, remove it instead of adding it a 2nd time«
+                newValue = targetWidget.value.replace(textToCopy,'')
+                replacedExistingText = true
+            }
+            else {
+                console.log('didnt find it')
+                // Combine existing text with new text
+                newValue = this.combineTexts(targetWidget.value || "", textToCopy);
+            }
             targetWidget.value = newValue;
+            
             
             if (targetNode.onWidgetChanged) {
                 this.log("Debug: Calling onWidgetChanged");
@@ -1786,7 +1799,10 @@ class PromptGallery {
             // Mark the canvas as dirty to trigger a redraw
             app.graph.setDirtyCanvas(true, true);
             
-            this.showToast('success', 'Tags Sent!', `Tags for "${imageName}" sent to ${targetNode.title} - ${targetWidget.name}`);
+            if(replacedExistingText)
+                this.showToast('success', 'Removed Tags!', `Tags for "${imageName}" removed from ${targetNode.title} - ${targetWidget.name}`);
+            else
+                this.showToast('success', 'Tags Sent!', `Tags for "${imageName}" sent to ${targetNode.title} - ${targetWidget.name}`);
         } else {
             // Fallback to clipboard
             navigator.clipboard.writeText(textToCopy).then(() => {
