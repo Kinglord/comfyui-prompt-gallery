@@ -1661,20 +1661,20 @@ class PromptGallery {
     }
 
     // Remove leading and trailing commas, spaces, and BREAK◘
-    cleanText(text) {
-        text = text.replace(/^[,\s]+|[,\s]+$/g, '');
-        // Replace BREAK (case insensitive) with a period, handling various scenarios
-        text = text.replace(/\s*BREAK\s*(?:,\s*)?/gi, '. ');
-        // Remove any duplicate periods or comma-period combinations
-        text = text.replace(/\.{2,}/g, '.').replace(/,\s*\./g, '.');
-        // Ensure there's a space after each period or comma, but not at the very end
-        text = text.replace(/([,])(?=\S)/g, '$1 ').trim();
-        return text;
-    }
+    // cleanText(text) {
+    //     text = text.replace(/^[,\s]+|[,\s]+$/g, '');
+    //     // Replace BREAK (case insensitive) with a period, handling various scenarios
+    //     text = text.replace(/\s*BREAK\s*(?:,\s*)?/gi, '. ');
+    //     // Remove any duplicate periods or comma-period combinations
+    //     text = text.replace(/\.{2,}/g, '.').replace(/,\s*\./g, '.');
+    //     // Ensure there's a space after each period or comma, but not at the very end
+    //     text = text.replace(/([,])(?=\S)/g, '$1 ').trim();
+    //     return text;
+    // }
 
     combineTexts(existing, newText) {
-        existing = this.cleanText(existing);
-        newText = this.cleanText(newText);
+        // existing = this.cleanText(existing);
+        // newText = this.cleanText(newText);
         
         if (!existing) return newText;
         
@@ -1711,10 +1711,10 @@ class PromptGallery {
                 const randomImage = categoryImages[Math.floor(Math.random() * categoryImages.length)];
                 this.log("Random image selected:", randomImage);
 
-                const cleanedTags = this.cleanText(randomImage.tags);
-                this.log("Cleaned tags:", cleanedTags);
+                // const cleanedTags = this.cleanText(randomImage.tags);
+                // this.log("Cleaned tags:", cleanedTags);
 
-                randomPrompt = this.combineTexts(randomPrompt, cleanedTags);
+                randomPrompt = this.combineTexts(randomPrompt, randomImage.tags);
                 this.log("Current random prompt:", randomPrompt);
             } else {
                 this.log(`No images found for category: ${category}`);
@@ -1740,7 +1740,7 @@ class PromptGallery {
         textToCopy = String(textToCopy).trim();
         
         // Clean the new text
-        textToCopy = this.cleanText(textToCopy);
+        // textToCopy = this.cleanText(textToCopy);
     
         const useSelectedNode = document.getElementById("use-selected-node").checked;
         const targetNodeDropdown = document.getElementById("target-node-dropdown");
