@@ -38,7 +38,7 @@ async def view_image(request):
                     content_type = 'application/octet-stream'
 
                 return web.Response(body=content, content_type=content_type,
-                                    headers={"Content-Disposition": f"filename=\"{filename}{ext}\""})
+                                    headers={"Content-Disposition": f"filename=\"{filename}{ext}\"", "Cache-Control": "max-age=31536000"})
 
         # print(f"[Prompt Gallery] Image not found: {os.path.join(base_path, filename)}") - turned off for spam reasons
         return web.Response(status=404)
