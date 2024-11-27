@@ -33,6 +33,7 @@ class PromptGallery {
         this.missingFiles = new Set();
         this.librariesLoadPromise = null;
         this.isDebugMode = false;
+        this.imagePaths = {};
 
 
         // Initialize category order from YAML files
@@ -1622,7 +1623,7 @@ class PromptGallery {
         });
     
         const img = $el("img", {
-            src: this.missingFiles.has(image.path) ? this.placeholderImageUrl : image.path,
+            src: this.placeholderImageUrl,
             alt: image.name,
             style: {
                 width: `${this.maxThumbnailSize}px`,
@@ -1630,17 +1631,20 @@ class PromptGallery {
                 objectFit: "cover",
                 borderRadius: "5px"
             },
-            onerror: () => {
-                if (!this.missingFiles.has(image.path)) {
-                    this.missingFiles.add(image.path);
-                    img.src = this.placeholderImageUrl;
-                } else {
+            // onerror: () => {
+                // if (!this.missingFiles.has(image.path)) {
+                    // this.missingFiles.add(image.path);
+                    // img.src = this.placeholderImageUrl;
+                // } else {
                     // If even the placeholder fails to load, hide the image
-                    img.style.display = 'none';
-                    console.error("Failed to load placeholder image for:", image.name);
-                }
-            }
+                    // img.style.display = 'none';
+                    // console.error("Failed to load placeholder image for:", image.name);
+                // }
+            // }
         });
+
+        this.imagePaths[image.name] = image.path; // image path set
+        this.observeImage(img); // lazy loading
     
         imgContainer.appendChild(img);
 
@@ -1664,6 +1668,24 @@ class PromptGallery {
         }
     
         return imgContainer;
+    }
+    
+    // Intersection Observer
+    observeImage(img) {
+        if (!this.imageObserver) {
+        this.imageObserver = new IntersectionObserver(
+            (entries, observer) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                const img = entry.target;
+                img.src = this.imagePaths[img.alt];
+                observer.unobserve(img);
+                }
+            });
+            }
+        );
+        }
+        this.imageObserver.observe(img);
     }
 
     cleanText(text) {
