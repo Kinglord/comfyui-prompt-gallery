@@ -34,7 +34,7 @@ class PromptGallery {
         this.librariesLoadPromise = null;
         this.isDebugMode = false;
         this.imagePaths = {};
-
+        this.fetchContent = {}; //fetching once
 
         // Initialize category order from YAML files
         this.yamlFiles.forEach(file => {
@@ -275,7 +275,7 @@ class PromptGallery {
 
     ///NEW DATA STRUCTURE STUFF
     async loadLibraries() {
-        if (!this.librariesLoadPromise) {
+        if (this.librariesLoadPromise === null) {
             this.librariesLoadPromise = this._loadLibrariesInternal();
         }
         return this.librariesLoadPromise;
@@ -378,8 +378,8 @@ class PromptGallery {
     
         for (const file of this.yamlFiles) {
             try {
-                const response = await fetch(`${this.baseUrl}/prompt_gallery/yaml?filename=${file.name}`);
-                if (!response.ok) {
+                const result = await this.fetchYamlContent(file.name);
+                if (!result) {
                     this.log(`YAML file not found: ${file.name}`);
                     return false;
                 }
@@ -1130,12 +1130,12 @@ class PromptGallery {
         function naturalSort(a, b) {
             return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
         }
-    
+
         for (const category of categories) {
             //this.log(`Processing category: ${category}`);
             const images = groupedImages[category];
             const sortedImages = [...images].sort((a, b) => {
-                return this.sortAscending 
+                return this.sortAscending
                     ? naturalSort(a.name, b.name)
                     : naturalSort(b.name, a.name);
             });
@@ -1338,17 +1338,26 @@ class PromptGallery {
         if (this.missingFiles.has(filename)) {
             return null;
         }
-        const response = await fetch(`${this.baseUrl}/prompt_gallery/yaml?filename=${filename}`);
-        if (response.status === 404) {
-            this.missingFiles.add(filename);
-            return null;
+        if (this.fetchContent[filename]) {
+            return this.fetchContent[filename];
         }
-        if (!response.ok) {
-            console.warn(`Failed to fetch YAML file ${filename}: ${response.statusText}`);
-            return null;
-        }
-        const content = await response.text();
-        return content.trim() === "" ? null : content;
+        this.fetchContent[filename] = fetch(`${this.baseUrl}/prompt_gallery/yaml?filename=${filename}`)
+            .then((res) => {
+                if (res.status === 404) {
+                    this.missingFiles.add(filename);
+                    return null;
+                }
+                if (!res.ok) {
+                    console.warn(`Failed to fetch YAML file ${filename}: ${res.statusText}`);
+                    return null;
+                }
+                return res.text();
+            })
+            .catch((error) => {
+                console.error('Error fetching data:', error);
+                delete this.fetchContent[filename];
+            });
+        return this.fetchContent[filename];
     }
     
 
