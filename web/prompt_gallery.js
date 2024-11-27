@@ -1123,14 +1123,20 @@ class PromptGallery {
         });
     
         //this.log("Sorted Categories:", categories);
+
+        // more intuitive sorting
+        // ex) [image1, image10, image2] -> [image1, image2, image10]
+        function naturalSort(a, b) {
+            return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
+        }
     
         for (const category of categories) {
             //this.log(`Processing category: ${category}`);
             const images = groupedImages[category];
             const sortedImages = [...images].sort((a, b) => {
                 return this.sortAscending 
-                    ? a.name.localeCompare(b.name)
-                    : b.name.localeCompare(a.name);
+                    ? naturalSort(a.name, b.name)
+                    : naturalSort(b.name, a.name);
             });
             const accordionSection = this.createAccordionSection(category, sortedImages);
             this.accordion.appendChild(accordionSection);
