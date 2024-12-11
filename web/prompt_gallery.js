@@ -295,6 +295,7 @@ class PromptGallery {
             }
 
             this.categories = this.yamlFiles.map(file => file.type);
+            console.log(this.categories);
             this.log("Categories set:", this.categories);
             this.log("Loaded YAML Files:", JSON.stringify(this.yamlFiles, null, 2));
 
@@ -1347,6 +1348,7 @@ class PromptGallery {
 
     parseYamlForImages(yamlContent, type, skipLevels, sections = null, pathAdjustment = null, ignoreKey = null) {
         const lines = yamlContent.split('\n');
+        const baseFolder = lines[0].slice(0, -1);
         const stack = [];
         const images = [];
     
@@ -1365,8 +1367,10 @@ class PromptGallery {
             const nextLine = lines[index + 1];
             if (nextLine && nextLine.trim().startsWith('-')) {
                 let path = stack.slice(skipLevels, -1).map(item => item.key).join('/');
-                path = path.replace(/^ponyxl\//, '');   // Remove any duplicate 'ponyxl' in the path
-    
+                // console.log(path)
+                // path = path.replace(/^ponyxl\//, '');   // Remove any duplicate 'ponyxl' in the path
+                
+                
                 const tags = nextLine.trim().substring(1).trim();
                 
                 // Skip empty tags or tags that are just a space
@@ -1388,7 +1392,8 @@ class PromptGallery {
                 }
     
                 const imageFilename = `${key}`;
-                const subfolderPath = `ponyxl/${path}`;
+                // const subfolderPath = `${baseFolder}/${path}`;
+                const subfolderPath = path;
                 const imageUrl = `${this.baseUrl}/prompt_gallery/image?filename=${encodeURIComponent(imageFilename)}&subfolder=${encodeURIComponent(subfolderPath)}`;
                 
                 // Get the immediate parent category (one level up)
