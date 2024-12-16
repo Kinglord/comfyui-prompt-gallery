@@ -817,7 +817,7 @@ class PromptGallery {
     }
 
     async ensureFileExists(filename) {
-        const maxAttempts = 10;
+        const maxAttempts = 1;
         const delayMs = 500;
 
         for (let attempt = 0; attempt < maxAttempts; attempt++) {
@@ -1690,11 +1690,15 @@ class PromptGallery {
         if (!existing) return newText;
         
         // If existing text ends with a period, don't add a comma
-        if (existing.endsWith('.')) {
-            return existing + ' ' + newText;
-        }
+        // if (existing.endsWith('.')) {
+        //     return existing + ' ' + newText;
+        // }
 
-        return existing + newText;
+        //if the last character isnt a comma, add one
+        if(newText.slice(-1) != ',')
+            return existing + newText + ',';
+
+        return existing + newText
     }
 
     generateRandomPrompt() {
