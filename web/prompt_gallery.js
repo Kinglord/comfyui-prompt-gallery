@@ -1788,9 +1788,7 @@ class PromptGallery {
             if(targetWidget.value.includes(textToCopy))
                 {
                 // If the clicked wildcard prompt is already in the textbox, remove it instead of adding it a 2nd time
-                newValue = targetWidget.value.replace(textToCopy,'')
-                newValue = targetWidget.value.replace(',,',', ')
-                newValue = targetWidget.value.replace(', ,',', ')
+                newValue = targetWidget.value.replace(textToCopy,'').replace(',,',', ').replace(', ,',', ')
                 replacedExistingText = true
             }
             else {
