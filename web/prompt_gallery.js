@@ -1787,8 +1787,10 @@ class PromptGallery {
             let replacedExistingText = false
             if(targetWidget.value.includes(textToCopy))
                 {
-                // If the clicked wildcard prompt is already in the textbox, remove it instead of adding it a 2nd time«
+                // If the clicked wildcard prompt is already in the textbox, remove it instead of adding it a 2nd time
                 newValue = targetWidget.value.replace(textToCopy,'')
+                newValue = targetWidget.value.replace(',,',', ')
+                newValue = targetWidget.value.replace(', ,',', ')
                 replacedExistingText = true
             }
             else {
