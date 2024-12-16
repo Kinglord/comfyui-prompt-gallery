@@ -1402,7 +1402,9 @@ class PromptGallery {
     
                 const image = { name: key, path: imageUrl, tags: tags, type: type, subcategory: immediateParent };
                 
+
                 if (sections) {
+                    console.log(sections)
                     for (const [sectionKey, sectionName] of Object.entries(sections)) {
                         if (path.includes(sectionKey)) {
                             image.section = sectionName;
@@ -1636,7 +1638,7 @@ class PromptGallery {
                 } else {
                     // If even the placeholder fails to load, hide the image
                     img.style.display = 'none';
-                    console.error("Failed to load placeholder image for:", image.name);
+                    // console.error("Failed to load placeholder image for:", image.name);
                 }
             }
         });
