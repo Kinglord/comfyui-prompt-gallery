@@ -45,16 +45,16 @@ class PromptGallery {
         });
 
         // Initialize Female Body sub-categories
-        const femaleBodyFile = this.yamlFiles.find(file => file.type === "Female Body");
-        if (femaleBodyFile && femaleBodyFile.sections) {
-            Object.values(femaleBodyFile.sections).forEach((subCategory, index) => {
-                const settingId = `Prompt Gallery.Category Order.FemaleBody_${subCategory}`;
-                const currentValue = this.app.ui.settings.getSettingValue(settingId, null);
-                if (currentValue === null) {
-                    this.app.ui.settings.setSettingValue(settingId, femaleBodyFile.order + index + 1);
-                }
-            });
-        }
+        // const femaleBodyFile = this.yamlFiles.find(file => file.type === "Female Body");
+        // if (femaleBodyFile && femaleBodyFile.sections) {
+        //     Object.values(femaleBodyFile.sections).forEach((subCategory, index) => {
+        //         const settingId = `Prompt Gallery.Category Order.FemaleBody_${subCategory}`;
+        //         const currentValue = this.app.ui.settings.getSettingValue(settingId, null);
+        //         if (currentValue === null) {
+        //             this.app.ui.settings.setSettingValue(settingId, femaleBodyFile.order + index + 1);
+        //         }
+        //     });
+        // }
 
         this.updateCategoryOrder();
     
@@ -1345,10 +1345,25 @@ class PromptGallery {
         return content.trim() === "" ? null : content;
     }
     
+    /**
+     * 
+     * @param {*} yamlContent 
+     * @param {*} type Section title
+     * @param {*} skipLevels Skip folder in thumbnails
+     * @param {*} sections 
+     * @param {*} pathAdjustment 
+     * @param {*} ignoreKey 
+     */
+    parseYAMLToJson(yamlContent, type, skipLevels, sections = null, pathAdjustment = null, ignoreKey = null) {
+        
+    }
 
     parseYamlForImages(yamlContent, type, skipLevels, sections = null, pathAdjustment = null, ignoreKey = null) {
+        console.log('-----')
+        // console.log(type + ' ' + sections)
+
         const lines = yamlContent.split('\n');
-        const baseFolder = lines[0].slice(0, -1);
+        // const baseFolder = lines[0].slice(0, -1);
         const stack = [];
         const images = [];
     
@@ -1393,24 +1408,28 @@ class PromptGallery {
     
                 const imageFilename = `${key}`;
                 // const subfolderPath = `${baseFolder}/${path}`;
-                const subfolderPath = path;
-                const imageUrl = `${this.baseUrl}/prompt_gallery/image?filename=${encodeURIComponent(imageFilename)}&subfolder=${encodeURIComponent(subfolderPath)}`;
+                // const subfolderPath = path;
+                const imageUrl = `${this.baseUrl}/prompt_gallery/image?filename=${encodeURIComponent(imageFilename)}&subfolder=${encodeURIComponent(path)}`;
                 
                 // Get the immediate parent category (one level up)
                 const pathParts = path.split('/');
+                // console.log(pathParts)
                 const immediateParent = pathParts[pathParts.length - 1];
     
                 const image = { name: key, path: imageUrl, tags: tags, type: type, subcategory: immediateParent };
                 
-
+                // console.log(sections[pathParts[pathParts.length - 1]])
                 if (sections) {
-                    console.log(sections)
-                    for (const [sectionKey, sectionName] of Object.entries(sections)) {
-                        if (path.includes(sectionKey)) {
-                            image.section = sectionName;
-                            break;
-                        }
-                    }
+                    image.section = sections[pathParts[pathParts.length - 1]];
+                    // console.log(sections)
+                    // for (const [sectionKey, sectionName] of Object.entries(sections)) {
+                    //     console.log(sectionKey + ' ' + sectionName)
+                    //     if (path.includes(sectionKey)) {
+                    //         image.section = sectionName;
+                    //         console.log(sectionKey + ' ' + sectionName + ' ' + path)
+                    //         break;
+                    //     }
+                    // }
                 }
     
                 // Special handling for generate_random items in Stereotypes (other_persona.yaml)
@@ -1638,7 +1657,7 @@ class PromptGallery {
                 } else {
                     // If even the placeholder fails to load, hide the image
                     img.style.display = 'none';
-                    // console.error("Failed to load placeholder image for:", image.name);
+                    console.error("Failed to load placeholder image for:", image.name);
                 }
             }
         });
