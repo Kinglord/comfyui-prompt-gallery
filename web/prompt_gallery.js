@@ -33,6 +33,7 @@ class PromptGallery {
         this.missingFiles = new Set();
         this.librariesLoadPromise = null;
         this.isDebugMode = false;
+        this.toastEnabled = this.createEnableToastsCheckbox();
 
 
         // Initialize category order from YAML files
@@ -74,7 +75,8 @@ class PromptGallery {
                     marginRight: "10px" 
                 } 
             }, [this.targetNodeDropdown]),
-            this.useSelectedNodeCheckbox
+            this.useSelectedNodeCheckbox,
+            this.toastEnabled
         ]);
     
         this.element = $el("div.prompt-gallery-popup", [
@@ -156,6 +158,41 @@ class PromptGallery {
         });
     
         label.innerHTML = "Active<br>Selection";
+    
+        container.appendChild(checkbox);
+        container.appendChild(label);
+    
+        return container;
+    }
+
+    createEnableToastsCheckbox() {
+        const container = $el("div", {
+            style: {
+                display: "flex",
+                alignItems: "center",
+                marginLeft: "10px",
+                whiteSpace: "nowrap"
+            },
+            title: "Enable or disable Toasts."
+        });
+    
+        const checkbox = $el("input", {
+            type: "checkbox",
+            id: "enable-toasts",
+            style: {
+                marginRight: "5px"
+            }
+        });
+    
+        const label = $el("div", {
+            style: {
+                fontSize: "12px",
+                lineHeight: "1",
+                textAlign: "center"
+            }
+        });
+    
+        label.innerHTML = "Enable<br>Toasts";
     
         container.appendChild(checkbox);
         container.appendChild(label);
@@ -1823,12 +1860,15 @@ class PromptGallery {
     }
 
     showToast(severity, summary, detail) {
-        app.extensionManager.toast.add({
-            severity: severity,
-            summary: summary,
-            detail: detail,
-            life: 5000
-        });
+        const toastsEnabled = document.getElementById("enable-toasts").checked;
+
+        if (toastsEnabled)
+            app.extensionManager.toast.add({
+                severity: severity,
+                summary: summary,
+                detail: detail,
+                life: 5000
+            });
     }
 
 }
