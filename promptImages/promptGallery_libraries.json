@@ -67,6 +67,13 @@
       "skipLevels": 0,
       "sections": null,
       "order": 10
+    },
+	{
+      "name": "Danbooru-styles.yaml",
+      "type": "styles",
+      "skipLevels": 0,
+      "sections": null,
+      "order": 11
     }
   ]
 }
